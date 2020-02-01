@@ -111,31 +111,30 @@ core.wait(CONF["timing"]["cue"])
 mwtTimer = core.CountdownTimer(CONF["task"]["duration"])
 screen.show_blank()
 while mwtTimer.getTime() > 0:
-    key = kb.getKeys()
-    if key:
-        quitExperimentIf(key[0].name == 'q')
 
-    core.wait(1)
+    # wait a minute
+    minuteTimer = core.CountdownTimer(CONF["task"]["triggerFrequency"])
+    while minuteTimer.getTime() > 0:
+        key = kb.getKeys()
+        if key:
+            quitExperimentIf(key[0].name == 'q')
 
-endTask.play()
+        core.wait(1)
+
+    # send a trigger to both the EEG and the eyetracker
+    triggerID = trigger.sendTriggerId()
+    eyetracker.send_trigger("sync", {"trigger": triggerID})
+
 
 ###########
 # Concluion
 ###########
 
 # End main experiment
+endTask.play()
 screen.show_cue("DONE!")
 trigger.send("End")
 core.wait(CONF["timing"]["cue"])
-
-# Blank screen for final rest
-screen.show_blank()
-logging.info('Starting blank period')
-
-trigger.send("StartBlank")
-core.wait(CONF["timing"]["rest"])
-trigger.send("EndBlank")
-
 
 logging.info('Finished')
 trigger.reset()
