@@ -112,6 +112,10 @@ mwtTimer = core.CountdownTimer(CONF["task"]["duration"])
 screen.show_blank()
 while mwtTimer.getTime() > 0:
 
+    # send a trigger to both the EEG and the eyetracker
+    triggerID = trigger.sendTriggerId()
+    eyetracker.send_trigger("sync", {"trigger": triggerID})
+
     # wait a minute
     minuteTimer = core.CountdownTimer(CONF["task"]["triggerFrequency"])
     while minuteTimer.getTime() > 0:
@@ -120,10 +124,6 @@ while mwtTimer.getTime() > 0:
             quitExperimentIf(key[0].name == 'q')
 
         core.wait(1)
-
-    # send a trigger to both the EEG and the eyetracker
-    triggerID = trigger.sendTriggerId()
-    eyetracker.send_trigger("sync", {"trigger": triggerID})
 
 
 ###########
