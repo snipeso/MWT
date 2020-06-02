@@ -60,6 +60,8 @@ def quitExperimentIf(shouldQuit):
         logging.info('quit experiment')
         eyetracker.stop_recording()
         trigger.reset()
+        questionnaireReminder.play()
+        core.wait(2)
         sys.exit(2)
 
 
@@ -90,20 +92,6 @@ eyetracker.start_recording(os.path.join(
     CONF["participant"], CONF["task"]["name"], CONF["session"]))
 
 
-# Blank screen for initial rest
-screen.show_blank()
-logging.info('Starting blank period')
-
-trigger.send("StartBlank")
-core.wait(CONF["timing"]["rest"])
-trigger.send("EndBlank")
-
-# Cue start of the experiment
-screen.show_cue("START")
-trigger.send("Start")
-core.wait(CONF["timing"]["cue"])
-
-
 #################
 # Main experiment
 #################
@@ -124,21 +112,3 @@ while mwtTimer.getTime() > 0:
             quitExperimentIf(key[0].name == 'q')
 
         core.wait(1)
-
-
-###########
-# Concluion
-###########
-
-# End main experiment
-endTask.play()
-screen.show_cue("DONE!")
-trigger.send("End")
-core.wait(CONF["timing"]["cue"])
-
-logging.info('Finished')
-trigger.reset()
-eyetracker.stop_recording()
-
-questionnaireReminder.play()
-core.wait(2)
